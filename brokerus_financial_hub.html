@@ -1,0 +1,1658 @@
+<!DOCTYPE html>
+<html lang="vi" dir="ltr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brokerus - Financial Hub, Top Broker Ratings & Trading Utilities</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#fffbe1',
+                            100: '#fff3b8',
+                            400: '#fbbf24',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            900: '#78350f',
+                        },
+                        darkbg: '#0a0d14',
+                        cardbg: '#121824',
+                        cardborder: '#1e293b',
+                        upgreen: '#10b981',
+                        downred: '#ef4444'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0a0d14; color: #f1f5f9; overflow-x: hidden; }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #0a0d14; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+
+        /* Ticker Marquee Animation */
+        @keyframes marquee {
+            0% { transform: translateX(0%); }
+            100% { transform: translateX(-50%); }
+        }
+        .animate-marquee {
+            display: flex;
+            width: 200%;
+            animation: marquee 35s linear infinite;
+        }
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        /* Price Flash Animations */
+        .flash-up { animation: flashGreen 0.8s ease-out; }
+        .flash-down { animation: flashRed 0.8s ease-out; }
+        @keyframes flashGreen { 0% { background-color: rgba(16, 185, 129, 0.4); } 100% { background-color: transparent; } }
+        @keyframes flashRed { 0% { background-color: rgba(239, 68, 68, 0.4); } 100% { background-color: transparent; } }
+
+        /* Glassmorphism Styles */
+        .glass-panel {
+            background: rgba(18, 24, 36, 0.85);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.07);
+        }
+        .glass-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card:hover {
+            border-color: rgba(245, 158, 11, 0.4);
+            box-shadow: 0 10px 30px -10px rgba(245, 158, 11, 0.15);
+        }
+        
+        /* Golden Badge Glow */
+        .gold-glow {
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.3);
+        }
+        
+        /* Tab Active Underline */
+        .nav-tab.active {
+            color: #f59e0b;
+            border-bottom: 2px solid #f59e0b;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-amber-500 selection:text-black">
+
+    <!-- TOP TICKER MARQUEE -->
+    <div class="bg-slate-950 border-b border-slate-800/80 text-xs overflow-hidden py-2 sticky top-0 z-50 backdrop-blur-md">
+        <div class="animate-marquee flex items-center whitespace-nowrap" id="tickerContainer">
+            <!-- Dynamic Content Injected via JS -->
+        </div>
+    </div>
+
+    <!-- MAIN HEADER NAVIGATION -->
+    <header class="bg-slate-900/90 backdrop-blur-md border-b border-slate-800 sticky top-[33px] z-40 transition-all duration-200">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+                <!-- Logo -->
+                <div class="flex items-center gap-3 cursor-pointer" onclick="switchTab('home')">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-600 via-amber-500 to-yellow-300 flex items-center justify-center font-black text-black text-xl shadow-lg shadow-amber-500/20">
+                        B
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-black text-xl tracking-tight bg-gradient-to-r from-amber-400 via-yellow-200 to-white bg-clip-text text-transparent">BROKERUS</span>
+                            <span class="text-[9px] bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded font-semibold border border-amber-500/30">PRO</span>
+                        </div>
+                        <p class="text-[10px] text-slate-400 -mt-1 font-medium tracking-wide">Financial Hub & Broker Ratings</p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Links -->
+                <nav class="hidden md:flex space-x-1 lg:space-x-4 text-sm font-medium">
+                    <button onclick="switchTab('home')" id="nav-home" class="nav-tab active px-3 py-5 transition text-slate-300 hover:text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-house text-xs"></i> <span data-i18n="nav_home">Home</span>
+                    </button>
+                    <button onclick="switchTab('brokers')" id="nav-brokers" class="nav-tab px-3 py-5 transition text-slate-300 hover:text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-award text-xs"></i> <span data-i18n="nav_brokers">Brokers</span>
+                    </button>
+                    <button onclick="switchTab('trading')" id="nav-trading" class="nav-tab px-3 py-5 transition text-slate-300 hover:text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-chart-line text-xs"></i> <span data-i18n="nav_trading">Live Trade</span>
+                    </button>
+                    <button onclick="switchTab('quotes')" id="nav-quotes" class="nav-tab px-3 py-5 transition text-slate-300 hover:text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-list-ul text-xs"></i> <span data-i18n="nav_quotes">Quotes</span>
+                    </button>
+                    <button onclick="switchTab('calendar')" id="nav-calendar" class="nav-tab px-3 py-5 transition text-slate-300 hover:text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-calendar-days text-xs"></i> <span data-i18n="nav_calendar">Calendar</span>
+                    </button>
+                    <button onclick="switchTab('glossary')" id="nav-glossary" class="nav-tab px-3 py-5 transition text-slate-300 hover:text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-book text-xs"></i> <span data-i18n="nav_glossary">Glossary</span>
+                    </button>
+                    <button onclick="switchTab('calculators')" id="nav-calculators" class="nav-tab px-3 py-5 transition text-slate-300 hover:text-amber-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-calculator text-xs"></i> <span data-i18n="nav_calculators">Calculators</span>
+                    </button>
+                </nav>
+
+                <!-- Right Utility Bar -->
+                <div class="flex items-center gap-3">
+                    
+                    <!-- Language Selector Dropdown -->
+                    <div class="relative inline-block text-left">
+                        <button onclick="toggleLangDropdown()" id="langBtn" class="flex items-center gap-2 bg-slate-800/80 hover:bg-slate-700 text-slate-200 text-xs px-3 py-2 rounded-lg border border-slate-700 transition">
+                            <span id="currentLangFlag">🇻🇳</span>
+                            <span id="currentLangText" class="font-semibold">VI</span>
+                            <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                        </button>
+                        <div id="langMenu" class="hidden absolute right-0 mt-2 w-40 rounded-xl bg-slate-900 border border-slate-800 shadow-2xl py-2 z-50">
+                            <button onclick="setLanguage('vi')" class="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 flex items-center gap-2"><span>🇻🇳</span> Tiếng Việt (VI)</button>
+                            <button onclick="setLanguage('en')" class="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 flex items-center gap-2"><span>🇺🇸</span> English (EN)</button>
+                            <button onclick="setLanguage('km')" class="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 flex items-center gap-2"><span>🇰🇭</span> ភាសាខ្មែរ (KM)</button>
+                            <button onclick="setLanguage('th')" class="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 flex items-center gap-2"><span>🇹🇭</span> ไทย (TH)</button>
+                            <button onclick="setLanguage('ar')" class="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 flex items-center gap-2"><span>🇸🇦</span> العربية (AR)</button>
+                            <button onclick="setLanguage('zh')" class="w-full px-4 py-2 text-left text-xs text-slate-300 hover:bg-amber-500/10 hover:text-amber-400 flex items-center gap-2"><span>🇨🇳</span> 简体中文 (ZH)</button>
+                        </div>
+                    </div>
+
+                    <!-- Recommended Action CTA -->
+                    <a href="https://kvbcaj.com/rhem9guim" target="_blank" rel="noopener" class="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-bold text-xs px-4 py-2 rounded-lg shadow-lg shadow-amber-500/20 transition transform active:scale-95">
+                        <i class="fa-solid fa-bolt text-xs"></i>
+                        <span data-i18n="cta_trade_kvb">KVB Prime Account</span>
+                    </a>
+
+                    <!-- Mobile Menu Button -->
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-slate-400 hover:text-white p-2">
+                        <i class="fa-solid fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-slate-900 border-b border-slate-800 px-4 pt-2 pb-4 space-y-1">
+            <button onclick="switchTab('home')" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:bg-slate-800" data-i18n="nav_home">Home</button>
+            <button onclick="switchTab('brokers')" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:bg-slate-800" data-i18n="nav_brokers">Brokers</button>
+            <button onclick="switchTab('trading')" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:bg-slate-800" data-i18n="nav_trading">Live Trade</button>
+            <button onclick="switchTab('quotes')" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:bg-slate-800" data-i18n="nav_quotes">Quotes</button>
+            <button onclick="switchTab('calendar')" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:bg-slate-800" data-i18n="nav_calendar">Calendar</button>
+            <button onclick="switchTab('glossary')" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:bg-slate-800" data-i18n="nav_glossary">Glossary</button>
+            <button onclick="switchTab('calculators')" class="w-full text-left px-3 py-2 rounded-md text-sm font-medium text-slate-200 hover:bg-slate-800" data-i18n="nav_calculators">Calculators</button>
+            <a href="https://kvbcaj.com/rhem9guim" target="_blank" class="block w-full text-center mt-3 bg-amber-500 text-black font-bold py-2.5 rounded-lg text-sm" data-i18n="cta_trade_kvb">KVB Prime Account</a>
+        </div>
+    </header>
+
+    <!-- CONTENT SECTIONS CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow">
+
+        <!-- TAB 1: HOME PAGE -->
+        <section id="tab-home" class="space-y-12">
+            
+            <!-- Hero Banner -->
+            <div class="relative rounded-3xl overflow-hidden bg-gradient-to-r from-slate-900 via-slate-900/90 to-amber-950/40 border border-slate-800 p-8 sm:p-12 shadow-2xl">
+                <div class="absolute -right-20 -bottom-20 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="max-w-3xl space-y-6 relative z-10">
+                    <div class="inline-flex items-center gap-2 bg-amber-500/10 border border-amber-500/30 text-amber-400 text-xs px-3 py-1.5 rounded-full font-semibold">
+                        <i class="fa-solid fa-shield-halved text-amber-400"></i>
+                        <span data-i18n="hero_badge">Verified Broker Intelligence & Trading Tools</span>
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight">
+                        <span data-i18n="hero_title_1">Compare Top Forex Brokers.</span><br>
+                        <span class="bg-gradient-to-r from-amber-400 via-yellow-200 to-amber-500 bg-clip-text text-transparent" data-i18n="hero_title_2">Trade Smarter with Zero Fee Perks.</span>
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base leading-relaxed" data-i18n="hero_subtitle">
+                        Discover top regulated brokers, monitor live liquidity, practice with $10,000 risk-free demo capital, and optimize swap costs with KVB Prime's exclusive 5-Day Swap-Free feature.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-4 pt-2">
+                        <button onclick="switchTab('brokers')" class="bg-gradient-to-r from-amber-500 to-yellow-500 text-black font-bold px-6 py-3.5 rounded-xl shadow-xl shadow-amber-500/20 hover:brightness-110 transition flex items-center gap-2 text-sm">
+                            <span data-i18n="hero_btn_brokers">View Broker Rankings</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="switchTab('trading')" class="bg-slate-800/80 hover:bg-slate-700 border border-slate-700 text-white font-semibold px-6 py-3.5 rounded-xl transition text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-laptop-code text-amber-400"></i>
+                            <span data-i18n="hero_btn_demo">Launch Demo Platform</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TOP 3 RANKED BROKERS HIGHLIGHT SECTION -->
+            <div class="space-y-6">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-trophy text-amber-400"></i>
+                            <span data-i18n="top_brokers_title">Top Rated Forex & CFD Brokers</span>
+                        </h2>
+                        <p class="text-slate-400 text-xs sm:text-sm mt-1" data-i18n="top_brokers_sub">Ranked by leverage, licensing, deposit speed, spreads, and fee policies.</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <!-- BROKER #1: KVB PRIME (WINNER) -->
+                    <div class="glass-card rounded-2xl p-6 relative flex flex-col justify-between border-2 border-amber-500/60 gold-glow bg-gradient-to-b from-amber-950/20 to-slate-900">
+                        <div class="absolute -top-3.5 left-6 bg-gradient-to-r from-amber-500 to-yellow-400 text-black font-extrabold text-[11px] px-3 py-1 rounded-full uppercase tracking-wider shadow-md flex items-center gap-1.5">
+                            <i class="fa-solid fa-crown"></i>
+                            <span data-i18n="rank_1_badge">#1 Overall Winner & Recommended</span>
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-start mt-2">
+                                <div>
+                                    <h3 class="text-2xl font-black text-white tracking-wide">KVB Prime</h3>
+                                    <p class="text-xs text-amber-400 font-semibold mt-0.5" data-i18n="kvb_subtitle">Most Licensed & Lowest Fees</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-amber-400 text-sm font-bold flex items-center gap-1">
+                                        <i class="fa-solid fa-star"></i> 4.9 <span class="text-slate-500 font-normal">/ 5.0</span>
+                                    </div>
+                                    <span class="text-[10px] text-emerald-400 font-semibold" data-i18n="badge_tier_1">Tier-1 Regulated</span>
+                                </div>
+                            </div>
+
+                            <!-- Highlights Grid -->
+                            <div class="mt-6 space-y-2.5 text-xs text-slate-300">
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_max_leverage">Max Leverage:</span>
+                                    <span class="font-bold text-white">1:1000</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_min_deposit">Min Deposit:</span>
+                                    <span class="font-bold text-white">$10 USD</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_withdrawal">Withdrawal Speed:</span>
+                                    <span class="font-bold text-emerald-400" data-i18n="val_instant">Instant Withdrawal</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800 bg-amber-500/10 px-2 rounded">
+                                    <span class="text-amber-300 font-medium" data-i18n="label_swap_free">Exclusive Perk:</span>
+                                    <span class="font-bold text-amber-400" data-i18n="val_swap_free_5">5-Day Swap Free</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 space-y-2">
+                            <a href="https://kvbcaj.com/rhem9guim" target="_blank" rel="noopener" class="w-full bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-400 hover:to-yellow-400 text-black font-extrabold text-sm py-3 rounded-xl shadow-lg shadow-amber-500/20 text-center block transition">
+                                <span data-i18n="btn_open_kvb">Open KVB Account</span> <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-1"></i>
+                            </a>
+                            <button onclick="openBrokerModal('kvb')" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs py-2 rounded-lg transition" data-i18n="btn_review">Read Full Review</button>
+                        </div>
+                    </div>
+
+                    <!-- BROKER #2: GTC FX -->
+                    <div class="glass-card rounded-2xl p-6 relative flex flex-col justify-between border border-slate-800 bg-slate-900/60">
+                        <div class="absolute -top-3.5 left-6 bg-slate-800 border border-slate-700 text-slate-300 font-bold text-[11px] px-3 py-1 rounded-full uppercase tracking-wider">
+                            #2 Top Rank
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-start mt-2">
+                                <div>
+                                    <h3 class="text-2xl font-black text-white tracking-wide">GTC FX</h3>
+                                    <p class="text-xs text-slate-400 font-semibold mt-0.5">Institutional Grade Execution</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-amber-400 text-sm font-bold flex items-center gap-1">
+                                        <i class="fa-solid fa-star"></i> 4.7 <span class="text-slate-500 font-normal">/ 5.0</span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">FCA / ASIC Regulated</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 space-y-2.5 text-xs text-slate-300">
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_max_leverage">Max Leverage:</span>
+                                    <span class="font-bold text-white">1:500</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_min_deposit">Min Deposit:</span>
+                                    <span class="font-bold text-white">$10 USD</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_withdrawal">Withdrawal Speed:</span>
+                                    <span class="font-bold text-emerald-400" data-i18n="val_instant">Instant Withdrawal</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400">Spread:</span>
+                                    <span class="font-bold text-white">From 0.0 Pips</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 space-y-2">
+                            <a href="https://web.mygtc.app/login/register?ref=vtgvcd7i" target="_blank" rel="noopener" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-sm py-3 rounded-xl text-center block transition">
+                                <span data-i18n="btn_open_gtc">Open GTC Account</span> <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-1"></i>
+                            </a>
+                            <button onclick="openBrokerModal('gtc')" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 font-semibold text-xs py-2 rounded-lg transition" data-i18n="btn_review">Read Full Review</button>
+                        </div>
+                    </div>
+
+                    <!-- BROKER #3: TMGM -->
+                    <div class="glass-card rounded-2xl p-6 relative flex flex-col justify-between border border-slate-800 bg-slate-900/60">
+                        <div class="absolute -top-3.5 left-6 bg-slate-800 border border-slate-700 text-slate-300 font-bold text-[11px] px-3 py-1 rounded-full uppercase tracking-wider">
+                            #3 Top Rank
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-start mt-2">
+                                <div>
+                                    <h3 class="text-2xl font-black text-white tracking-wide">TMGM</h3>
+                                    <p class="text-xs text-slate-400 font-semibold mt-0.5">Global Liquidity Provider</p>
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-amber-400 text-sm font-bold flex items-center gap-1">
+                                        <i class="fa-solid fa-star"></i> 4.6 <span class="text-slate-500 font-normal">/ 5.0</span>
+                                    </div>
+                                    <span class="text-[10px] text-slate-400">ASIC / VFSC Regulated</span>
+                                </div>
+                            </div>
+
+                            <div class="mt-6 space-y-2.5 text-xs text-slate-300">
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_max_leverage">Max Leverage:</span>
+                                    <span class="font-bold text-white">1:1000</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_min_deposit">Min Deposit:</span>
+                                    <span class="font-bold text-white">$10 USD</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400" data-i18n="label_withdrawal">Withdrawal Speed:</span>
+                                    <span class="font-bold text-blue-400">Within 2 Hours</span>
+                                </div>
+                                <div class="flex justify-between py-1.5 border-b border-slate-800">
+                                    <span class="text-slate-400">Instruments:</span>
+                                    <span class="font-bold text-white">12,000+ CFDs</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 pt-4 space-y-2">
+                            <a href="https://portal.tmgm.com/register?node=MjA2MjIz&language=en" target="_blank" rel="noopener" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white font-bold text-sm py-3 rounded-xl text-center block transition">
+                                <span data-i18n="btn_open_tmgm">Open TMGM Account</span> <i class="fa-solid fa-arrow-up-right-from-square text-xs ml-1"></i>
+                            </a>
+                            <button onclick="openBrokerModal('tmgm')" class="w-full bg-slate-900 hover:bg-slate-800 text-slate-400 font-semibold text-xs py-2 rounded-lg transition" data-i18n="btn_review">Read Full Review</button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- KEY FEATURES HIGHLIGHT GRID -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-6 pt-4">
+                <div class="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl">
+                    <i class="fa-solid fa-hand-holding-dollar text-2xl text-amber-400 mb-3"></i>
+                    <h4 class="font-bold text-white text-base" data-i18n="feat_1_title">5-Day Swap Free</h4>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="feat_1_desc">Hold overnight gold & currency positions with 0 swap fees for up to 5 consecutive days via KVB Prime.</p>
+                </div>
+                <div class="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl">
+                    <i class="fa-solid fa-bolt-lightning text-2xl text-emerald-400 mb-3"></i>
+                    <h4 class="font-bold text-white text-base" data-i18n="feat_2_title">Ultra-Fast Deposits</h4>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="feat_2_desc">Low $10 minimum deposit threshold with instant localized bank transfers and crypto gateways.</p>
+                </div>
+                <div class="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl">
+                    <i class="fa-solid fa-chart-pie text-2xl text-blue-400 mb-3"></i>
+                    <h4 class="font-bold text-white text-base" data-i18n="feat_3_title">Real-Time Utilities</h4>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="feat_3_desc">Embedded TradingView charts, live economic news feed, and automated precision calculators.</p>
+                </div>
+                <div class="bg-slate-900/50 border border-slate-800 p-5 rounded-2xl">
+                    <i class="fa-solid fa-graduation-cap text-2xl text-purple-400 mb-3"></i>
+                    <h4 class="font-bold text-white text-base" data-i18n="feat_4_title">50+ FX Knowledge Base</h4>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="feat_4_desc">Master key technical and macroeconomic terms directly interlinked with economic calendar releases.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 2: TRUSTED BROKERS DETAILED TAB -->
+        <section id="tab-brokers" class="hidden space-y-8">
+            <div class="border-b border-slate-800 pb-5">
+                <h2 class="text-3xl font-black text-white" data-i18n="broker_hub_title">Comprehensive Broker Evaluation Hub</h2>
+                <p class="text-slate-400 text-sm mt-1" data-i18n="broker_hub_sub">Verified broker safety metrics, regulatory compliance, leverage limits, and exclusive cashback benefits.</p>
+            </div>
+
+            <!-- Comparison Matrix Table -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-x-auto shadow-xl">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold">
+                        <tr>
+                            <th class="p-4" data-i18n="col_broker">Broker</th>
+                            <th class="p-4" data-i18n="col_rating">Rating</th>
+                            <th class="p-4" data-i18n="col_leverage">Max Leverage</th>
+                            <th class="p-4" data-i18n="col_deposit">Min Deposit</th>
+                            <th class="p-4" data-i18n="col_withdrawal">Withdrawal</th>
+                            <th class="p-4" data-i18n="col_swap">Swap Feature</th>
+                            <th class="p-4 text-center" data-i18n="col_action">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-800 font-medium">
+                        <!-- KVB Prime -->
+                        <tr class="hover:bg-slate-800/50 transition bg-amber-500/5">
+                            <td class="p-4 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-amber-500 text-black font-black flex items-center justify-center">KVB</div>
+                                <div>
+                                    <div class="font-bold text-white flex items-center gap-1.5">
+                                        KVB Prime 
+                                        <span class="bg-amber-500/20 text-amber-400 text-[10px] px-2 py-0.5 rounded font-bold">TOP CHOICE</span>
+                                    </div>
+                                    <div class="text-[11px] text-slate-400">Multiple Licenses (FCA / SVG / CIMA)</div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-amber-400 font-bold">4.9 / 5.0 ★</td>
+                            <td class="p-4 font-bold text-white">1:1000</td>
+                            <td class="p-4 font-bold text-white">$10</td>
+                            <td class="p-4 text-emerald-400 font-semibold" data-i18n="val_instant">Instant</td>
+                            <td class="p-4 text-amber-400 font-semibold" data-i18n="val_swap_free_5">5-Day Swap-Free</td>
+                            <td class="p-4 text-center">
+                                <a href="https://kvbcaj.com/rhem9guim" target="_blank" rel="noopener" class="bg-amber-500 hover:bg-amber-400 text-black font-extrabold px-4 py-2 rounded-lg text-xs inline-block transition">
+                                    <span data-i18n="btn_register">Register Now</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <!-- GTC FX -->
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-4 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-slate-800 text-blue-400 font-black flex items-center justify-center border border-slate-700">GTC</div>
+                                <div>
+                                    <div class="font-bold text-white">GTC FX</div>
+                                    <div class="text-[11px] text-slate-400">FCA / ASIC Regulated</div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-amber-400 font-bold">4.7 / 5.0 ★</td>
+                            <td class="p-4 font-bold text-white">1:500</td>
+                            <td class="p-4 font-bold text-white">$10</td>
+                            <td class="p-4 text-emerald-400 font-semibold" data-i18n="val_instant">Instant</td>
+                            <td class="p-4 text-slate-400">Standard Swap</td>
+                            <td class="p-4 text-center">
+                                <a href="https://web.mygtc.app/login/register?ref=vtgvcd7i" target="_blank" rel="noopener" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-lg text-xs inline-block border border-slate-700 transition">
+                                    <span data-i18n="btn_register">Register Now</span>
+                                </a>
+                            </td>
+                        </tr>
+                        <!-- TMGM -->
+                        <tr class="hover:bg-slate-800/50 transition">
+                            <td class="p-4 flex items-center gap-3">
+                                <div class="w-8 h-8 rounded bg-slate-800 text-emerald-400 font-black flex items-center justify-center border border-slate-700">TM</div>
+                                <div>
+                                    <div class="font-bold text-white">TMGM</div>
+                                    <div class="text-[11px] text-slate-400">ASIC / VFSC Regulated</div>
+                                </div>
+                            </td>
+                            <td class="p-4 text-amber-400 font-bold">4.6 / 5.0 ★</td>
+                            <td class="p-4 font-bold text-white">1:1000</td>
+                            <td class="p-4 font-bold text-white">$10</td>
+                            <td class="p-4 text-blue-400 font-semibold">Within 2 Hours</td>
+                            <td class="p-4 text-slate-400">Islamic Swap-Free Available</td>
+                            <td class="p-4 text-center">
+                                <a href="https://portal.tmgm.com/register?node=MjA2MjIz&language=en" target="_blank" rel="noopener" class="bg-slate-800 hover:bg-slate-700 text-white font-bold px-4 py-2 rounded-lg text-xs inline-block border border-slate-700 transition">
+                                    <span data-i18n="btn_register">Register Now</span>
+                                </a>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 3: LIVE CHART & ADVANCED DEMO TRADING ENGINE -->
+        <section id="tab-trading" class="hidden space-y-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white flex items-center gap-2">
+                        <i class="fa-solid fa-chart-candlestick text-amber-400"></i>
+                        <span data-i18n="trading_platform_title">Real-Time Chart & $10,000 Demo Execution</span>
+                    </h2>
+                    <p class="text-xs text-slate-400 mt-0.5" data-i18n="trading_platform_sub">Simulate live market orders with customizable SL/TP and margin leverage limits.</p>
+                </div>
+                
+                <!-- Asset Selector Selector -->
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400" data-i18n="label_select_asset">Select Asset:</span>
+                    <select id="activeAssetSelect" onchange="changeActiveAsset(this.value)" class="bg-slate-900 border border-slate-700 text-amber-400 font-bold text-xs px-3 py-2 rounded-lg focus:outline-none">
+                        <option value="XAUUSD">XAU/USD (Gold)</option>
+                        <option value="EURUSD">EUR/USD</option>
+                        <option value="GBPUSD">GBP/USD</option>
+                        <option value="USDJPY">USD/JPY</option>
+                        <option value="BTCUSD">BTC/USD (Bitcoin)</option>
+                        <option value="ETHUSD">ETH/USD (Ethereum)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                
+                <!-- Embedded TradingView Chart Widget (Left 2 Columns) -->
+                <div class="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-2 min-h-[500px] flex flex-col">
+                    <div id="tradingview_chart_container" class="w-full flex-grow min-h-[480px] rounded-xl overflow-hidden">
+                        <!-- TradingView Widget Script Injected JS -->
+                    </div>
+                </div>
+
+                <!-- Demo Trading Execution Panel (Right Column) -->
+                <div class="space-y-6">
+                    
+                    <!-- Account Financial Metrics Box -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-3">
+                        <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                            <span class="text-xs text-slate-400 uppercase tracking-wider font-semibold" data-i18n="demo_balance_label">Demo Capital:</span>
+                            <span class="text-lg font-black text-amber-400" id="demoBalance">$10,000.00</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <span class="text-slate-500" data-i18n="label_equity">Equity:</span>
+                                <div class="font-bold text-white text-sm" id="demoEquity">$10,000.00</div>
+                            </div>
+                            <div>
+                                <span class="text-slate-500" data-i18n="label_floating_pnl">Floating P/L:</span>
+                                <div class="font-bold text-slate-300 text-sm" id="demoFloatingPnL">$0.00</div>
+                            </div>
+                            <div>
+                                <span class="text-slate-500" data-i18n="label_used_margin">Margin Used:</span>
+                                <div class="font-bold text-white text-sm" id="demoMargin">$0.00</div>
+                            </div>
+                            <div>
+                                <span class="text-slate-500" data-i18n="label_free_margin">Free Margin:</span>
+                                <div class="font-bold text-white text-sm" id="demoFreeMargin">$10,000.00</div>
+                            </div>
+                        </div>
+                        <button onclick="resetDemoAccount()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-400 text-[11px] py-1.5 rounded transition font-medium" data-i18n="btn_reset_demo">
+                            Reset Account ($10,000)
+                        </button>
+                    </div>
+
+                    <!-- Order Control Form -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                        <div class="flex justify-between items-center">
+                            <span class="text-sm font-bold text-white" id="orderFormAssetTitle">XAU/USD Trading</span>
+                            <span class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded" id="orderCurrentPrice">Price: $2,725.50</span>
+                        </div>
+
+                        <!-- Lot Size & Leverage Selection -->
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="text-slate-400 font-medium block mb-1" data-i18n="label_lot_size">Lot Size:</label>
+                                <input type="number" id="orderLots" value="0.10" step="0.01" min="0.01" max="10.0" class="w-full bg-slate-950 border border-slate-700 text-white font-bold p-2.5 rounded-lg focus:border-amber-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 font-medium block mb-1" data-i18n="label_leverage">Leverage:</label>
+                                <select id="orderLeverage" class="w-full bg-slate-950 border border-slate-700 text-white font-bold p-2.5 rounded-lg focus:border-amber-500 focus:outline-none">
+                                    <option value="100">1:100</option>
+                                    <option value="200">1:200</option>
+                                    <option value="500" selected>1:500</option>
+                                    <option value="1000">1:1000 (KVB)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SL / TP Limits -->
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div>
+                                <label class="text-slate-400 font-medium block mb-1">Stop Loss (SL):</label>
+                                <input type="number" id="orderSL" placeholder="Optional" step="0.01" class="w-full bg-slate-950 border border-slate-700 text-white p-2.5 rounded-lg focus:border-amber-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 font-medium block mb-1">Take Profit (TP):</label>
+                                <input type="number" id="orderTP" placeholder="Optional" step="0.01" class="w-full bg-slate-950 border border-slate-700 text-white p-2.5 rounded-lg focus:border-amber-500 focus:outline-none">
+                            </div>
+                        </div>
+
+                        <!-- Buy / Sell Triggers -->
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <button onclick="executeDemoTrade('BUY')" class="bg-emerald-600 hover:bg-emerald-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-emerald-600/20 active:scale-95 text-sm flex flex-col items-center justify-center">
+                                <span data-i18n="btn_buy">BUY (LONG)</span>
+                                <span class="text-[10px] font-normal opacity-80" id="buyPriceLabel">@ --</span>
+                            </button>
+                            <button onclick="executeDemoTrade('SELL')" class="bg-rose-600 hover:bg-rose-500 text-white font-black py-3 rounded-xl transition shadow-lg shadow-rose-600/20 active:scale-95 text-sm flex flex-col items-center justify-center">
+                                <span data-i18n="btn_sell">SELL (SHORT)</span>
+                                <span class="text-[10px] font-normal opacity-80" id="sellPriceLabel">@ --</span>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- OPEN POSITIONS TABLE -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-5 space-y-4">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-list-check text-amber-400"></i>
+                    <span data-i18n="title_open_positions">Active Demo Positions</span>
+                </h3>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs text-slate-300">
+                        <thead class="bg-slate-950 text-slate-400 uppercase font-semibold">
+                            <tr>
+                                <th class="p-3">ID</th>
+                                <th class="p-3">Asset</th>
+                                <th class="p-3">Type</th>
+                                <th class="p-3">Lots</th>
+                                <th class="p-3">Entry Price</th>
+                                <th class="p-3">Current Price</th>
+                                <th class="p-3">P/L ($)</th>
+                                <th class="p-3 text-center">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="openPositionsTable" class="divide-y divide-slate-800">
+                            <!-- Injected Dynamically via JS -->
+                            <tr>
+                                <td colspan="8" class="p-6 text-center text-slate-500" data-i18n="no_positions">No open positions. Select an asset above and place a Buy/Sell order.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 4: REAL-TIME MARKET WATCH & QUOTES -->
+        <section id="tab-quotes" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="text-2xl font-black text-white" data-i18n="quotes_title">Real-Time Market Quotes</h2>
+                <p class="text-xs text-slate-400 mt-1" data-i18n="quotes_sub">Live institutional prices with quick demo trade triggers and real account registration.</p>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
+                <table class="w-full text-left text-sm text-slate-300">
+                    <thead class="bg-slate-950 text-slate-400 text-xs uppercase font-semibold">
+                        <tr>
+                            <th class="p-4">Symbol</th>
+                            <th class="p-4">Bid</th>
+                            <th class="p-4">Ask</th>
+                            <th class="p-4">24h Change</th>
+                            <th class="p-4 text-center">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quotesTableBody" class="divide-y divide-slate-800 font-medium">
+                        <!-- Populated by JS -->
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <!-- TAB 5: ECONOMIC CALENDAR & GLOSSARY LINKING -->
+        <section id="tab-calendar" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <h2 class="text-2xl font-black text-white" data-i18n="calendar_title">Global Macro Economic Calendar</h2>
+                    <p class="text-xs text-slate-400 mt-1" data-i18n="calendar_sub">High-impact financial news and central bank decisions with direct glossary definitions.</p>
+                </div>
+                <!-- Interlinking shortcuts -->
+                <div class="flex flex-wrap gap-2 text-xs">
+                    <span class="text-slate-400 font-semibold self-center" data-i18n="label_quick_terms">Quick Terms:</span>
+                    <button onclick="jumpToGlossary('NFP')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-2.5 py-1 rounded border border-slate-700">NFP</button>
+                    <button onclick="jumpToGlossary('CPI')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-2.5 py-1 rounded border border-slate-700">CPI</button>
+                    <button onclick="jumpToGlossary('FOMC')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-2.5 py-1 rounded border border-slate-700">FOMC</button>
+                    <button onclick="jumpToGlossary('GDP')" class="bg-slate-800 hover:bg-slate-700 text-amber-400 px-2.5 py-1 rounded border border-slate-700">GDP</button>
+                </div>
+            </div>
+
+            <!-- TradingView Embedded Calendar Widget Container -->
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-2 min-h-[600px]">
+                <div id="tradingview_calendar_container" class="w-full h-[600px] rounded-xl overflow-hidden">
+                    <!-- Calendar Widget Injected via JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TAB 6: 50+ TRADING & FX GLOSSARY HUB -->
+        <section id="tab-glossary" class="hidden space-y-6">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="text-2xl font-black text-white" data-i18n="glossary_title">Trading & Forex Knowledge Base (50+ Terms)</h2>
+                <p class="text-xs text-slate-400 mt-1" data-i18n="glossary_sub">Essential technical, macroeconomic, and risk management concepts simplified.</p>
+            </div>
+
+            <!-- Search and Filter Controls -->
+            <div class="flex flex-col sm:flex-row items-center gap-4">
+                <div class="relative w-full sm:w-80">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-500 text-xs"></i>
+                    <input type="text" id="glossarySearch" onkeyup="filterGlossary()" placeholder="Search terms (e.g. Pip, NFP, Leverage)..." class="w-full bg-slate-900 border border-slate-800 text-white pl-10 pr-4 py-2.5 rounded-xl text-xs focus:outline-none focus:border-amber-500">
+                </div>
+                <div class="flex flex-wrap gap-2 w-full sm:w-auto text-xs" id="glossaryCategoryFilters">
+                    <button onclick="filterGlossaryCat('ALL')" class="glossary-cat-btn bg-amber-500 text-black font-bold px-3 py-2 rounded-lg">All Terms</button>
+                    <button onclick="filterGlossaryCat('Basics')" class="glossary-cat-btn bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 px-3 py-2 rounded-lg">Basics</button>
+                    <button onclick="filterGlossaryCat('Macro')" class="glossary-cat-btn bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 px-3 py-2 rounded-lg">Macroeconomics</button>
+                    <button onclick="filterGlossaryCat('Technicals')" class="glossary-cat-btn bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 px-3 py-2 rounded-lg">Technicals</button>
+                    <button onclick="filterGlossaryCat('Risk')" class="glossary-cat-btn bg-slate-900 text-slate-300 border border-slate-800 hover:border-slate-700 px-3 py-2 rounded-lg">Risk Management</button>
+                </div>
+            </div>
+
+            <!-- Glossary Cards Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="glossaryGrid">
+                <!-- Dynamically populated 50+ items in JS -->
+            </div>
+        </section>
+
+        <!-- TAB 7: FX CALCULATORS SUITE -->
+        <section id="tab-calculators" class="hidden space-y-8">
+            <div class="border-b border-slate-800 pb-4">
+                <h2 class="text-2xl font-black text-white" data-i18n="calc_title">Forex & Trading Calculators</h2>
+                <p class="text-xs text-slate-400 mt-1" data-i18n="calc_sub">Accurately project margin requirements, pip values, swap savings, and monthly cashback rebates.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                <!-- CALCULATOR 1: MARGIN REQUIREMENT -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-coins text-amber-400 text-lg"></i>
+                        <h3 class="font-bold text-white text-base">Margin Calculator</h3>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="text-slate-400 block mb-1">Asset Pair:</label>
+                            <select id="calcMarginAsset" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                                <option value="XAUUSD">XAU/USD (Gold @ $2,725.00)</option>
+                                <option value="EURUSD">EUR/USD (@ 1.0850)</option>
+                                <option value="GBPUSD">GBP/USD (@ 1.2950)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 block mb-1">Volume (Lots):</label>
+                                <input type="number" id="calcMarginLots" value="1.0" step="0.1" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Leverage Ratio:</label>
+                                <select id="calcMarginLeverage" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                                    <option value="100">1:100</option>
+                                    <option value="200">1:200</option>
+                                    <option value="500">1:500</option>
+                                    <option value="1000" selected>1:1000 (KVB)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="calculateMargin()" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2.5 rounded-lg transition">Calculate Required Margin</button>
+                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-center">
+                            <span class="text-slate-400 text-[11px] block">Required Margin Capital:</span>
+                            <span class="text-xl font-black text-amber-400" id="resMarginValue">$272.50 USD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CALCULATOR 2: PIP VALUE & PROFIT/LOSS -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-calculator text-emerald-400 text-lg"></i>
+                        <h3 class="font-bold text-white text-base">Pip & P/L Calculator</h3>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 block mb-1">Volume (Lots):</label>
+                                <input type="number" id="calcPipLots" value="1.0" step="0.1" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Instrument:</label>
+                                <select id="calcPipSymbol" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                                    <option value="FOREX">Standard FX Pair (EURUSD)</option>
+                                    <option value="GOLD">XAU/USD Gold</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-slate-400 block mb-1">Entry Price:</label>
+                                <input type="number" id="calcPipEntry" value="1.0850" step="0.0001" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-slate-400 block mb-1">Exit Price:</label>
+                                <input type="number" id="calcPipExit" value="1.0900" step="0.0001" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                            </div>
+                        </div>
+                        <button onclick="calculatePipPnL()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-lg transition border border-slate-700">Calculate Pip & PnL</button>
+                        <div class="grid grid-cols-2 gap-2 text-center">
+                            <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-slate-400 text-[10px] block">Value Per Pip:</span>
+                                <span class="text-sm font-bold text-white" id="resPipValue">$10.00</span>
+                            </div>
+                            <div class="bg-slate-950 p-2.5 rounded-lg border border-slate-800">
+                                <span class="text-slate-400 text-[10px] block">Projected P/L:</span>
+                                <span class="text-sm font-bold text-emerald-400" id="resPipPnL">+$500.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CALCULATOR 3: 5-DAY SWAP-FREE SAVINGS -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-piggy-bank text-amber-400 text-lg"></i>
+                        <h3 class="font-bold text-white text-base">KVB 5-Day Swap Savings Calculator</h3>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="text-slate-400 block mb-1">Gold Position Volume (Lots):</label>
+                            <input type="number" id="calcSwapLots" value="2.0" step="0.5" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-slate-400 block mb-1">Overnight Holding Days:</label>
+                            <input type="number" id="calcSwapDays" value="5" min="1" max="30" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                        </div>
+                        <button onclick="calculateSwapSavings()" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-bold py-2.5 rounded-lg transition">Compare Swap Costs</button>
+                        <div class="bg-amber-500/10 p-3 rounded-lg border border-amber-500/30 text-center">
+                            <span class="text-amber-300 text-[11px] block">Estimated Savings with KVB Prime 5-Day Free:</span>
+                            <span class="text-xl font-black text-amber-400" id="resSwapSavings">$75.00 USD Saved</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CALCULATOR 4: REBATE / CASHBACK CALCULATOR -->
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center gap-2 border-b border-slate-800 pb-3">
+                        <i class="fa-solid fa-gift text-purple-400 text-lg"></i>
+                        <h3 class="font-bold text-white text-base">Monthly Cashback / Rebate Estimator</h3>
+                    </div>
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="text-slate-400 block mb-1">Estimated Monthly Trading Volume (Lots):</label>
+                            <input type="number" id="calcRebateVolume" value="50" step="5" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-slate-400 block mb-1">Rebate Tier Rate ($/Lot):</label>
+                            <input type="number" id="calcRebateRate" value="6.00" step="0.5" class="w-full bg-slate-950 border border-slate-800 text-white p-2.5 rounded-lg focus:outline-none">
+                        </div>
+                        <button onclick="calculateRebate()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-lg transition border border-slate-700">Calculate Monthly Cashback</button>
+                        <div class="bg-slate-950 p-3 rounded-lg border border-slate-800 text-center">
+                            <span class="text-slate-400 text-[11px] block">Projected Extra Monthly Income:</span>
+                            <span class="text-xl font-black text-purple-400" id="resRebateTotal">$300.00 USD</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="bg-slate-950 border-t border-slate-800 mt-16 py-12 text-xs text-slate-500">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-amber-500 text-black font-black flex items-center justify-center text-sm">B</div>
+                    <span class="font-bold text-white text-sm">BROKERUS FINANCIAL HUB</span>
+                </div>
+                <div class="flex flex-wrap gap-4 text-slate-400">
+                    <button onclick="switchTab('brokers')" class="hover:text-amber-400">Brokers</button>
+                    <button onclick="switchTab('trading')" class="hover:text-amber-400">Demo Trading</button>
+                    <button onclick="switchTab('glossary')" class="hover:text-amber-400">Glossary</button>
+                    <button onclick="switchTab('calculators')" class="hover:text-amber-400">Calculators</button>
+                    <a href="https://kvbcaj.com/rhem9guim" target="_blank" class="text-amber-400 hover:underline">KVB Official Partner</a>
+                </div>
+            </div>
+            <p class="leading-relaxed text-[11px] text-slate-600">
+                <strong>Risk Disclosure:</strong> Foreign Exchange (Forex) and Contracts for Difference (CFDs) trading carry a high level of risk to your capital and may not be suitable for all investors. Leverage can work against you as well as for you. Please ensure you fully understand the risks involved before trading. Information provided on Brokerus is for educational and news purposes only and does not constitute financial advice.
+            </p>
+            <div class="text-center text-slate-600 pt-4 border-t border-slate-900">
+                © 2026 Brokerus Intelligence Hub. All rights reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- BROKER MODAL DETAIL VIEW -->
+    <div id="brokerModal" class="hidden fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 space-y-4 relative">
+            <button onclick="closeBrokerModal()" class="absolute right-4 top-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div id="modalContent">
+                <!-- Injected via JS -->
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APPLICATION LOGIC ENGINE -->
+    <script>
+        // ==========================================
+        // 1. INTERNATIONALIZATION (i18n) DICTIONARY
+        // ==========================================
+        const i18n = {
+            vi: {
+                nav_home: "Trang Chủ", nav_brokers: "Sàn Uy Tín", nav_trading: "Giao Dịch Live", nav_quotes: "Bảng Giá", nav_calendar: "Lịch Kinh Tế", nav_glossary: "Thuật Ngữ (50+)", nav_calculators: "Công Cụ Tính",
+                cta_trade_kvb: "Tài Khoản KVB Prime", hero_badge: "Hệ Thống Đánh Giá & Công Cụ Trading Xác Thực",
+                hero_title_1: "So Sánh Sàn Forex Top Đầu.", hero_title_2: "Giao Dịch Tối Ưu Phí Swap.",
+                hero_subtitle: "Khám phá các broker cấp phép chuẩn quốc tế, theo dõi thanh khoản thời gian thực, trải nghiệm tài khoản Demo $10,000 và miễn phí 5 ngày Swap cùng KVB Prime.",
+                hero_btn_brokers: "Xem Xếp Hạng Sàn", hero_btn_demo: "Mở Trading Demo",
+                top_brokers_title: "Xếp Hạng Sàn Forex & CFD Hàng Đầu", top_brokers_sub: "Đánh giá dựa trên đòn bẩy, giấy phép, tốc độ rút tiền và ưu đãi phí.",
+                rank_1_badge: "#1 Khuyên Dùng Tốt Nhất", kvb_subtitle: "Đa Giấy Phép & Phí Cực Thấp", badge_tier_1: "Cấp Phép Tier-1",
+                label_max_leverage: "Đòn Bẩy Tối Đa:", label_min_deposit: "Nạp Tối Thiểu:", label_withdrawal: "Tốc Độ Rút Tiền:", label_swap_free: "Đặc Quyền Hot:",
+                val_instant: "Rút Nhanh Cấp Tốc", val_swap_free_5: "Miễn Phí 5 Ngày Swap",
+                btn_open_kvb: "Mở Tài Khoản KVB", btn_open_gtc: "Mở Tài Khoản GTC", btn_open_tmgm: "Mở Tài Khoản TMGM", btn_review: "Đọc Đánh Giá Chi Tiết",
+                feat_1_title: "5 Ngày Free Swap", feat_1_desc: "Giữ lệnh qua đêm Vàng & Forex 5 ngày không tốn phí Swap trên KVB Prime.",
+                feat_2_title: "Nạp Cực Nhanh $10", feat_2_desc: "Ngưỡng nạp chỉ từ $10 qua ngân hàng nội địa và cổng Crypto.",
+                feat_3_title: "Công Cụ Real-time", feat_3_desc: "Biểu đồ TradingView tích hợp, tin tức lịch kinh tế & máy tính khối lượng.",
+                feat_4_title: "50+ Thuật Ngữ FX", feat_4_desc: "Nắm vững khái niệm kinh tế vĩ mô và kỹ thuật liên kết trực tiếp lịch tin.",
+                col_broker: "Sàn Giao Dịch", col_rating: "Đánh Giá", col_leverage: "Đòn Bẩy Max", col_deposit: "Nạp Tối Thiểu", col_withdrawal: "Thời Gian Rút", col_swap: "Tính Năng Swap", col_action: "Thao Tác", btn_register: "Đăng Ký Ngay",
+                trading_platform_title: "Biểu Đồ Live & Khớp Lệnh Demo $10,000", trading_platform_sub: "Mô phỏng đặt lệnh thị trường thực tế với Stop Loss, Take Profit & Đòn Bẩy tùy chỉnh.",
+                label_select_asset: "Chọn Tài Sản:", demo_balance_label: "Vốn Demo:", label_equity: "Tài Sản (Equity):", label_floating_pnl: "P/L Tạm Tính:", label_used_margin: "Ký Quỹ Sử Dụng:", label_free_margin: "Ký Quỹ Dư:", btn_reset_demo: "Reset Tài Khoản ($10,000)",
+                label_lot_size: "Khối Lượng (Lot):", label_leverage: "Đòn Bẩy:", btn_buy: "MUA (BUY / LONG)", btn_sell: "BÁN (SELL / SHORT)", title_open_positions: "Lệnh Demo Đang Mở", no_positions: "Chưa có lệnh nào đang mở. Hãy chọn cặp tiền và đặt lệnh Buy/Sell.",
+                quotes_title: "Bảng Giá Thị Trường Real-Time", quotes_sub: "Giá Bid/Ask trực tiếp từ nguồn thanh khoản cùng nút chuyển giao dịch nhanh.",
+                calendar_title: "Lịch Kinh Tế Vĩ Mô Toàn Cầu", calendar_sub: "Các sự kiện tài chính quan trọng và lãi suất ngân hàng trung ương.", label_quick_terms: "Tra Nhanh:",
+                glossary_title: "Kho Thuật Ngữ Forex & Trading (50+)", glossary_sub: "Đầy đủ các thuật ngữ Cơ bản, Vĩ mô, Kỹ thuật và Quản trị rủi ro.",
+                calc_title: "Bộ Công Cụ Tính Toán Trading", calc_sub: "Tính chính xác ký quỹ, giá trị Pip, tiết kiệm Swap và tiền Cashback hàng tháng."
+            },
+            en: {
+                nav_home: "Home", nav_brokers: "Top Brokers", nav_trading: "Live Trade", nav_quotes: "Quotes", nav_calendar: "Calendar", nav_glossary: "Glossary (50+)", nav_calculators: "Calculators",
+                cta_trade_kvb: "KVB Prime Account", hero_badge: "Verified Broker Intelligence & Trading Tools",
+                hero_title_1: "Compare Top Forex Brokers.", hero_title_2: "Trade Smarter with Zero Fee Perks.",
+                hero_subtitle: "Discover top regulated brokers, monitor live liquidity, practice with $10,000 risk-free demo capital, and optimize swap costs with KVB Prime's exclusive 5-Day Swap-Free feature.",
+                hero_btn_brokers: "View Broker Rankings", hero_btn_demo: "Launch Demo Platform",
+                top_brokers_title: "Top Rated Forex & CFD Brokers", top_brokers_sub: "Ranked by leverage, licensing, deposit speed, spreads, and fee policies.",
+                rank_1_badge: "#1 Recommended Choice", kvb_subtitle: "Most Licensed & Lowest Fees", badge_tier_1: "Tier-1 Regulated",
+                label_max_leverage: "Max Leverage:", label_min_deposit: "Min Deposit:", label_withdrawal: "Withdrawal Speed:", label_swap_free: "Exclusive Perk:",
+                val_instant: "Instant Withdrawal", val_swap_free_5: "5-Day Swap Free",
+                btn_open_kvb: "Open KVB Account", btn_open_gtc: "Open GTC Account", btn_open_tmgm: "Open TMGM Account", btn_review: "Read Full Review",
+                feat_1_title: "5-Day Swap Free", feat_1_desc: "Hold overnight gold & currency positions with 0 swap fees for up to 5 consecutive days via KVB Prime.",
+                feat_2_title: "Ultra-Fast Deposits", feat_2_desc: "Low $10 minimum deposit threshold with instant localized bank transfers and crypto gateways.",
+                feat_3_title: "Real-Time Utilities", feat_3_desc: "Embedded TradingView charts, live economic news feed, and automated precision calculators.",
+                feat_4_title: "50+ FX Knowledge Base", feat_4_desc: "Master key technical and macroeconomic terms directly interlinked with economic calendar releases.",
+                col_broker: "Broker", col_rating: "Rating", col_leverage: "Max Leverage", col_deposit: "Min Deposit", col_withdrawal: "Withdrawal", col_swap: "Swap Feature", col_action: "Action", btn_register: "Register Now",
+                trading_platform_title: "Real-Time Chart & $10,000 Demo Execution", trading_platform_sub: "Simulate live market orders with customizable SL/TP and margin leverage limits.",
+                label_select_asset: "Select Asset:", demo_balance_label: "Demo Capital:", label_equity: "Equity:", label_floating_pnl: "Floating P/L:", label_used_margin: "Margin Used:", label_free_margin: "Free Margin:", btn_reset_demo: "Reset Account ($10,000)",
+                label_lot_size: "Lot Size:", label_leverage: "Leverage:", btn_buy: "BUY (LONG)", btn_sell: "SELL (SHORT)", title_open_positions: "Active Demo Positions", no_positions: "No open positions. Select an asset above and place a Buy/Sell order.",
+                quotes_title: "Real-Time Market Quotes", quotes_sub: "Live institutional prices with quick demo trade triggers and real account registration.",
+                calendar_title: "Global Macro Economic Calendar", calendar_sub: "High-impact financial news and central bank decisions with direct glossary definitions.", label_quick_terms: "Quick Terms:",
+                glossary_title: "Trading & Forex Knowledge Base (50+ Terms)", glossary_sub: "Essential technical, macroeconomic, and risk management concepts simplified.",
+                calc_title: "Forex & Trading Calculators", calc_sub: "Accurately project margin requirements, pip values, swap savings, and monthly cashback rebates."
+            },
+            km: {
+                nav_home: "ទំព័រដើម", nav_brokers: "ពាណិជ្ជករកំពូល", nav_trading: "ការជួញដូរផ្ទាល់", nav_quotes: "តម្លៃផ្ទាល់", nav_calendar: "ប្រតិទិនសេដ្ឋកិច្ច", nav_glossary: "ពាក្យបច្ចេកទេស", nav_calculators: "ឧបករណ៍គណនា",
+                cta_trade_kvb: "គណនី KVB Prime", hero_badge: "ប្រព័ន្ធវាយតម្លៃពាណិជ្ជករដែលបានផ្ទៀងផ្ទាត់",
+                hero_title_1: "ប្រៀបធៀប Broker Forex កំពូល។", hero_title_2: "ជួញដូរដោយឆ្លាតវៃដោយឥតគិតថ្លៃ Swap।",
+                hero_subtitle: "ស្វែងរកប្រកាសនីយបត្រផ្លូវការ ពិសោធន៍គណនី Demo $10,000 និងរីករាយជាមួយការមិនគិតថ្លៃ Swap 5 ថ្ងៃនៅលើ KVB Prime។",
+                hero_btn_brokers: "មើលការវាយតម្លៃ Broker", hero_btn_demo: "បើកគណនី Demo",
+                top_brokers_title: "ចំណាត់ថ្នាក់ Broker Forex & CFD កំពូល", top_brokers_sub: "វាយតម្លៃលើអានុភាព អាជ្ញាប័ណ្ណ ល្បឿនដកប្រាក់ និងកម្រៃជើងសារ។",
+                rank_1_badge: "#1 ជម្រើសដែលបានណែនាំ", kvb_subtitle: "អាជ្ញាប័ណ្ណច្រើនជាងគេ & កម្រៃសេវាទាបបំផុត", badge_tier_1: "អាជ្ញាប័ណ្ណ Tier-1",
+                label_max_leverage: "អានុភាពអតិបរមា:", label_min_deposit: "ប្រាក់កក់អប្បបរមា:", label_withdrawal: "ល្បឿនដកប្រាក់:", label_swap_free: "លក្ខណៈពិសេស:",
+                val_instant: "ដកប្រាក់ភ្លាមៗ", val_swap_free_5: "ឥតគិតថ្លៃ Swap 5 ថ្ងៃ",
+                btn_open_kvb: "បើកគណនី KVB", btn_open_gtc: "បើកគណនី GTC", btn_open_tmgm: "បើកគណនី TMGM", btn_review: "អានការវាយតម្លៃលម្អិត",
+                feat_1_title: "ឥតគិតថ្លៃ Swap 5 ថ្ងៃ", feat_1_desc: "រក្សាតំណែងមាស និងរូបិយប័ណ្ណយប់ជ្រៅដោយមិនអស់ថ្លៃ Swap 5 ថ្ងៃនៅលើ KVB Prime។",
+                feat_2_title: "ការដាក់ប្រាក់រហ័ស $10", feat_2_desc: "ការដាក់ប្រាក់អប្បបរមាត្រឹមតែ $10 តាមរយៈធនាគារក្នុងស្រុក និង Crypto។",
+                feat_3_title: "ឧបករណ៍ផ្ទាល់", feat_3_desc: "គំនូសតាង TradingView ព័ត៌មានសេដ្ឋកិច្ចផ្ទាល់ និងម៉ាស៊ីនគិតលេខ។",
+                feat_4_title: "50+ ពាក្យបច្ចេកទេស FX", feat_4_desc: "យល់ដឹងពីពាក្យបច្ចេកទេសសេដ្ឋកិច្ច និងការវិភាគបច្ចេកទេស។",
+                col_broker: "Broker", col_rating: "ការវាយតម្លៃ", col_leverage: "អានុភាពអតិបរមា", col_deposit: "ប្រាក់កក់អប្បបរមា", col_withdrawal: "ការដកប្រាក់", col_swap: "លក្ខណៈ Swap", col_action: "សកម្មភាព", btn_register: "ចុះឈ្មោះឥឡូវនេះ",
+                trading_platform_title: "គំនូសតាងផ្ទាល់ & ការជួញដូរ Demo $10,000", trading_platform_sub: "ធ្វើការជួញដូរទិញ/លក់ជាក់ស្តែងជាមួយ Stop Loss និង Take Profit។",
+                label_select_asset: "ជ្រើសរើសទ្រព្យសកម្ម:", demo_balance_label: "ដើមទុន Demo:", label_equity: "ទ្រព្យសកម្មសរុប:", label_floating_pnl: "ប្រាក់ចំណេញ/ខាតបណ្តោះអាសន្ន:", label_used_margin: "ប្រាក់កក់ដែលបានប្រើ:", label_free_margin: "ប្រាក់កក់នៅសល់:", btn_reset_demo: "កំណត់គណនីឡើងវិញ ($10,000)",
+                label_lot_size: "ទំហំ Lot:", label_leverage: "អានុភាព:", btn_buy: "ទិញ (BUY)", btn_sell: "លក់ (SELL)", title_open_positions: "ការបញ្ជាទិញដែលកំពុងបើក", no_positions: "មិនទាន់មានការបញ្ជាទិញទេ។ សូមជ្រើសរើសទ្រព្យសកម្មហើយដាក់បញ្ជាទិញ/លក់។",
+                quotes_title: "តារាងតម្លៃទីផ្សារផ្ទាល់", quotes_sub: "តម្លៃ Bid/Ask ផ្ទាល់ពីទីផ្សារ និងប៊ូតុងជួញដូររហ័ស។",
+                calendar_title: "ប្រតិទិនសេដ្ឋកិច្ចពិភពលោក", calendar_sub: "ព្រឹត្តិការណ៍ហិរញ្ញវត្ថុ និងការសម្រេចចិត្តអត្រាការប្រាក់។", label_quick_terms: "ស្វែងរករហ័ស:",
+                glossary_title: "បណ្តុំពាក្យបច្ចេកទេសជួញដូរ (50+ ពាក្យ)", glossary_sub: "ពាក្យបច្ចេកទេសមូលដ្ឋាន សេដ្ឋកិច្ចម៉ាក្រូ និងការគ្រប់គ្រងហានិភ័យ។",
+                calc_title: "ម៉ាស៊ីនគិតលេខជួញដូរ", calc_sub: "គណនាប្រាក់កក់ តម្លៃ Pip និងប្រាក់ត្រឡប់មកវិញ Cashback។"
+            },
+            th: {
+                nav_home: "หน้าแรก", nav_brokers: "โบรกเกอร์ยอดนิยม", nav_trading: "เทรดสด", nav_quotes: "ราคาตลาด", nav_calendar: "ปฏิทินเศรษฐกิจ", nav_glossary: "คำศัพท์ (50+)", nav_calculators: "เครื่องคิดเลข",
+                cta_trade_kvb: "บัญชี KVB Prime", hero_badge: "ระบบประเมินโบรกเกอร์และเครื่องมือการเทรดที่ผ่านการตรวจสอบ",
+                hero_title_1: "เปรียบเทียบโบรกเกอร์ Forex ชั้นนำ.", hero_title_2: "เทรดอย่างชาญฉลาด ฟรีค่า Swap.",
+                hero_subtitle: "ค้นหาโบรกเกอร์ที่ได้รับใบอนุญาตระดับโลก ทดลองบัญชี Demo $10,000 และเพลิดเพลินกับสิทธิพิเศษฟรี Swap 5 วันกับ KVB Prime",
+                hero_btn_brokers: "ดูการจัดอันดับโบรกเกอร์", hero_btn_demo: "เปิดบัญชี Demo",
+                top_brokers_title: "อันดับโบรกเกอร์ Forex & CFD ยอดนิยม", top_brokers_sub: "ประเมินตามเลเวอเรจ ใบอนุญาต ความเร็วในการถอนเงิน และสเปรด",
+                rank_1_badge: "#1 ตัวเลือกที่แนะนำ", kvb_subtitle: "ใบอนุญาตมากที่สุด & ค่าธรรมเนียมต่ำที่สุด", badge_tier_1: "ใบอนุญาต Tier-1",
+                label_max_leverage: "เลเวอเรจสูงสุด:", label_min_deposit: "ฝากเงินขั้นต่ำ:", label_withdrawal: "ความเร็วในการถอน:", label_swap_free: "สิทธิพิเศษ:",
+                val_instant: "ถอนเงินทันที", val_swap_free_5: "ฟรีค่า Swap 5 วัน",
+                btn_open_kvb: "เปิดบัญชี KVB", btn_open_gtc: "เปิดบัญชี GTC", btn_open_tmgm: "เปิดบัญชี TMGM", btn_review: "อ่านรีวิวฉบับเต็ม",
+                feat_1_title: "ฟรีค่า Swap 5 วัน", feat_1_desc: "ถือออเดอร์ทองคำและ Forex ข้ามคืนโดยไม่มีค่า Swap สูงสุด 5 วันติดต่อกันบน KVB Prime",
+                feat_2_title: "ฝากเงินรวดเร็ว $10", feat_2_desc: "ฝากเงินขั้นต่ำเพียง $10 ผ่านธนาคารท้องถิ่นและ Crypto",
+                feat_3_title: "เครื่องมือ Real-time", feat_3_desc: "กราฟ TradingView ในตัว ข่าวเศรษฐกิจสด และเครื่องคิดเลขการเทรด",
+                feat_4_title: "50+ คำศัพท์ Forex", feat_4_desc: "เรียนรู้คำศัพท์ทางเทคนิคและเศรษฐศาสตร์มหภาคที่เชื่อมโยงกับปฏิทินข่าว",
+                col_broker: "โบรกเกอร์", col_rating: "คะแนน", col_leverage: "เลเวอเรจสูงสุด", col_deposit: "ฝากขั้นต่ำ", col_withdrawal: "การถอนเงิน", col_swap: "ฟีเจอร์ Swap", col_action: "การกระทำ", btn_register: "ลงทะเบียนทันที",
+                trading_platform_title: "กราฟสด & ส่งคำสั่ง Demo $10,000", trading_platform_sub: "จำลองการส่งคำสั่ง ซื้อ/ขาย พร้อมกำหนด Stop Loss และ Take Profit",
+                label_select_asset: "เลือกสินทรัพย์:", demo_balance_label: "เงินทุน Demo:", label_equity: "สินทรัพย์สุทธิ:", label_floating_pnl: "กำไร/ขาดทุนลอยตัว:", label_used_margin: "หลักประกันที่ใช้:", label_free_margin: "หลักประกันคงเหลือ:", btn_reset_demo: "รีเซ็ตบัญชี ($10,000)",
+                label_lot_size: "ขนาด Lot:", label_leverage: "เลเวอเรจ:", btn_buy: "ซื้อ (BUY)", btn_sell: "ขาย (SELL)", title_open_positions: "ออเดอร์ที่เปิดอยู่", no_positions: "ยังไม่มีออเดอร์เปิด เลือกสินทรัพย์ด้านบนเพื่อส่งคำสั่งซื้อ/ขาย",
+                quotes_title: "ตารางราคาตลาด Real-Time", quotes_sub: "ราคา Bid/Ask สดจากตลาด พร้อมปุ่มทางลัดส่งคำสั่งเทรด",
+                calendar_title: "ปฏิทินเศรษฐกิจโลก", calendar_sub: "เหตุการณ์ทางการเงินสำคัญและการตัดสินใจอัตราดอกเบี้ย", label_quick_terms: "ค้นหาด่วน:",
+                glossary_title: "คลังคำศัพท์การเทรด & Forex (50+ คำ)", glossary_sub: "คำศัพท์พื้นฐาน เศรษฐศาสตร์มหภาค และการบริหารความเสี่ยง",
+                calc_title: "เครื่องคิดเลขการเทรด Forex", calc_sub: "คำนวณหลักประกัน มูลค่า Pip และเงินคืน Cashback รายเดือน"
+            },
+            ar: {
+                nav_home: "الرئيسية", nav_brokers: "أفضل الوسطاء", nav_trading: "التداول المباشر", nav_quotes: "الأسعار المباشرة", nav_calendar: "التقويم الاقتصادي", nav_glossary: "المصطلحات (50+)", nav_calculators: "الحاسبات",
+                cta_trade_kvb: "حساب KVB Prime", hero_badge: "منصة تقييم الوسطاء وأدوات التداول المعتمدة",
+                hero_title_1: "قارن بين أفضل وسطاء الفوركس.", hero_title_2: "تداول بذكاء بدون رسوم التبيت Swap.",
+                hero_subtitle: "اكتشف أفضل الوسطاء المرخصين، راقب السيولة المباشرة، تدرب بحساب تجريبي بقيمة 10,000 دولار، واستمتع بـ 5 أيام بدون رسوم تبييت مع KVB Prime.",
+                hero_btn_brokers: "عرض تصنيف الوسطاء", hero_btn_demo: "فتح الحساب التجريبي",
+                top_brokers_title: "تصنيف أفضل وسطاء الفوركس والعقود مقابل الفروقات", top_brokers_sub: "تقييم بناءً على الرافعة المالية، التراخيص، سرعة السحب، والعمولات.",
+                rank_1_badge: "#1 الخيار الموصى به", kvb_subtitle: "الأكثر ترخيصاً وأقل العمولات", badge_tier_1: "تراخيص من الفئة الأولى Tier-1",
+                label_max_leverage: "أقصى رافعة مالية:", label_min_deposit: "أقل إيداع:", label_withdrawal: "سرعة السحب:", label_swap_free: "ميزة خاصة:",
+                val_instant: "سحب فوري", val_swap_free_5: "5 أيام بدون رسوم تبييت",
+                btn_open_kvb: "فتح حساب KVB", btn_open_gtc: "فتح حساب GTC", btn_open_tmgm: "فتح حساب TMGM", btn_review: "قراءة المراجعة الكاملة",
+                feat_1_title: "5 أيام بدون Swap", feat_1_desc: "احتفظ بصفقات الذهب والعملات لعدة أيام بدون رسوم تبييت Swap مع KVB Prime.",
+                feat_2_title: "إيداع سريع بـ 10$", feat_2_desc: "حد أدنى للإيداع يبدأ من 10 دولارات عبر البنوك المحلية والعملات المشفرة.",
+                feat_3_title: "أدوات مباشرة", feat_3_desc: "رسوم بيانية متكاملة من TradingView، أخبار اقتصادية مباشرة وحاسبات دقيقة.",
+                feat_4_title: "50+ مصطلح فوركس", feat_4_desc: "تعلم أحدث المصطلحات الاقتصادية والتحليل الفني المرتبطة بالتقويم الاقتصادي.",
+                col_broker: "الوسيط", col_rating: "التقييم", col_leverage: "الرافعة المالية", col_deposit: "الحد الأدنى للإيداع", col_withdrawal: "السحب", col_swap: "ميزة Swap", col_action: "الإجراء", btn_register: "سجل الآن",
+                trading_platform_title: "الرسم البياني المباشر وتداول تجريبي بـ 10,000$", trading_platform_sub: "نفذ أوامر السوق الحية مع تحديد أهداف الربح وإيقاف الخسارة.",
+                label_select_asset: "اختر الأصل:", demo_balance_label: "رأس المال التجريبي:", label_equity: "صافي قيمة الحساب:", label_floating_pnl: "الأرباح/الخسائر العائمة:", label_used_margin: "الهامش المستخدم:", label_free_margin: "الهامش الحر:", btn_reset_demo: "إعادة ضبط الحساب (10,000$)",
+                label_lot_size: "حجم العقود (Lot):", label_leverage: "الرافعة المالية:", btn_buy: "شراء (BUY)", btn_sell: "بيع (SELL)", title_open_positions: "الصفقات المفتوحة", no_positions: "لا توجد صفقات مفتوحة حالياً. اختر أصلاً وقم بتنفيذ أمر شراء أو بيع.",
+                quotes_title: "أسعار السوق المباشرة", quotes_sub: "أسعار العرض والطلب المباشرة مع أزرار تنفيذ سريعة.",
+                calendar_title: "التقويم الاقتصادي العالمي", calendar_sub: "الأحداث المالية الهامة وقرارات أسعار الفائدة للبنك المركزي.", label_quick_terms: "مصطلحات سريعة:",
+                glossary_title: "موسوعة مصطلحات التداول والفوركس (50+ مصطلح)", glossary_sub: "شرح مفصل للمفاهيم الأساسية، الاقتصاد الكلي وإدارة المخاطر.",
+                calc_title: "حاسبات التداول والفوركس", calc_sub: "احسب الهامش المطلوب، قيمة النقطة Pip، وتوفير رسوم التبييت والكاشباك."
+            },
+            zh: {
+                nav_home: "首页", nav_brokers: "优质券商", nav_trading: "实盘模拟", nav_quotes: "实时行情", nav_calendar: "财经日历", nav_glossary: "术语库 (50+)", nav_calculators: "计算工具",
+                cta_trade_kvb: "KVB Prime 账户", hero_badge: "经过验证的券商评级与交易工具",
+                hero_title_1: "对比顶级外汇经纪商.", hero_title_2: "智慧交易，享 5 天免隔夜利息.",
+                hero_subtitle: "探索全球高监管券商，监控实时流动性，使用 $10,000 模拟资金练习，并享受 KVB Prime 独家的 5 天免 Swap 隔夜费特权。",
+                hero_btn_brokers: "查看券商排名", hero_btn_demo: "开启模拟交易",
+                top_brokers_title: "顶级外汇与 CFD 经纪商排行榜", top_brokers_sub: "根据杠杆、监管牌照、出入金速度、点差和费率综合评分。",
+                rank_1_badge: "#1 最佳推荐券商", kvb_subtitle: "多国正规牌照 & 超低手续费", badge_tier_1: "Tier-1 顶级监管",
+                label_max_leverage: "最大杠杆:", label_min_deposit: "最低入金:", label_withdrawal: "出金速度:", label_swap_free: "核心特权:",
+                val_instant: "极速秒到账", val_swap_free_5: "5 天免隔夜利息",
+                btn_open_kvb: "开立 KVB 账户", btn_open_gtc: "开立 GTC 账户", btn_open_tmgm: "开立 TMGM 账户", btn_review: "阅读详细测评",
+                feat_1_title: "5 天免 Swap 费", feat_1_desc: "在 KVB Prime 持有黄金与外汇隔夜头寸，连续 5 天享受 0 隔夜利息费用。",
+                feat_2_title: "低至 $10 入金", feat_2_desc: "最低门槛仅需 $10，支持本地银行便捷转账及加密货币通道。",
+                feat_3_title: "实时交易工具", feat_3_desc: "嵌入式 TradingView 图表、实时财经日历与自动化精准计算器。",
+                feat_4_title: "50+ 外汇术语库", feat_4_desc: "全面掌握宏观经济与技术分析核心概念，直通财经日历事件。",
+                col_broker: "经纪商", col_rating: "综合评分", col_leverage: "最大杠杆", col_deposit: "最低入金", col_withdrawal: "出金速度", col_swap: "隔夜费特权", col_action: "操作", btn_register: "立即开户",
+                trading_platform_title: "实时图表 & $10,000 模拟下单引擎", trading_platform_sub: "模拟真实市场订单，支持自定义止损止盈与杠杆倍数。",
+                label_select_asset: "选择资产:", demo_balance_label: "模拟资金:", label_equity: "账户净值:", label_floating_pnl: "浮动盈亏:", label_used_margin: "已用保证金:", label_free_margin: "可用保证金:", btn_reset_demo: "重置账户 ($10,000)",
+                label_lot_size: "交易手数:", label_leverage: "杠杆倍数:", btn_buy: "买入 (BUY)", btn_sell: "卖出 (SELL)", title_open_positions: "当前持仓订单", no_positions: "暂无持仓订单。请在上方选择资产并执行买入/卖出操作。",
+                quotes_title: "实时市场报价表", quotes_sub: "来自机构级的实时 Bid/Ask 报价，提供一键模拟交易与开户链接。",
+                calendar_title: "全球宏观财经日历", calendar_sub: "高影响力的财经数据发布与央行利率决议，链接术语库解释。", label_quick_terms: "快捷术语:",
+                glossary_title: "外汇与交易知识库 (50+ 术语)", glossary_sub: "涵盖基础概念、宏观经济、技术分析与风险管理。",
+                calc_title: "外汇交易计算器", calc_sub: "精准计算保证金需求、Pip 点值、Swap 隔夜费节省及每月返佣。"
+            }
+        };
+
+        let currentLang = 'vi';
+
+        function toggleLangDropdown() {
+            document.getElementById('langMenu').classList.toggle('hidden');
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+            document.documentElement.dir = (lang === 'ar') ? 'rtl' : 'ltr';
+
+            // Flags Update
+            const flags = { vi: '🇻🇳', en: '🇺🇸', km: '🇰🇭', th: '🇹🇭', ar: '🇸🇦', zh: '🇨🇳' };
+            document.getElementById('currentLangFlag').innerText = flags[lang];
+            document.getElementById('currentLangText').innerText = lang.toUpperCase();
+            document.getElementById('langMenu').classList.add('hidden');
+
+            // Translate Text Elements
+            const langData = i18n[lang] || i18n['en'];
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (langData[key]) {
+                    el.innerText = langData[key];
+                }
+            });
+
+            // Re-render components with translated dynamic texts
+            renderMarketQuotes();
+            renderGlossary();
+        }
+
+        // ==========================================
+        // 2. LIVE MARKET TICKER & PRICE DATA SIMULATOR
+        // ==========================================
+        const marketAssets = [
+            { symbol: 'XAUUSD', name: 'Gold / USD', price: 2725.50, change: 0.85, digits: 2, isGold: true },
+            { symbol: 'EURUSD', name: 'EUR / USD', price: 1.0852, change: -0.12, digits: 4 },
+            { symbol: 'GBPUSD', name: 'GBP / USD', price: 1.2965, change: 0.24, digits: 4 },
+            { symbol: 'USDJPY', name: 'USD / JPY', price: 152.35, change: 0.41, digits: 2 },
+            { symbol: 'BTCUSD', name: 'Bitcoin / USD', price: 67850.00, change: 2.15, digits: 2 },
+            { symbol: 'ETHUSD', name: 'Ethereum / USD', price: 2540.20, change: -1.05, digits: 2 }
+        ];
+
+        function initTicker() {
+            const container = document.getElementById('tickerContainer');
+            // Duplicate array for seamless infinite marquee effect
+            const list = [...marketAssets, ...marketAssets, ...marketAssets];
+            container.innerHTML = list.map(item => `
+                <div class="inline-flex items-center gap-2 px-6 border-r border-slate-800/60" id="ticker-${item.symbol}">
+                    <span class="font-bold text-white">${item.symbol}</span>
+                    <span class="font-mono text-slate-200" id="ticker-price-${item.symbol}">${item.price.toFixed(item.digits)}</span>
+                    <span class="${item.change >= 0 ? 'text-emerald-400' : 'text-rose-400'} font-semibold text-[11px]" id="ticker-change-${item.symbol}">
+                        ${item.change >= 0 ? '+' : ''}${item.change}%
+                    </span>
+                </div>
+            `).join('');
+        }
+
+        // Simulate live WebSocket price updates
+        setInterval(() => {
+            marketAssets.forEach(asset => {
+                const delta = (Math.random() - 0.49) * (asset.price * 0.0008);
+                const oldPrice = asset.price;
+                asset.price = Math.max(0.0001, asset.price + delta);
+                
+                // Update Ticker UI
+                const priceEl = document.getElementById(`ticker-price-${asset.symbol}`);
+                if (priceEl) {
+                    priceEl.innerText = asset.price.toFixed(asset.digits);
+                    priceEl.className = `font-mono ${asset.price >= oldPrice ? 'text-emerald-400 flash-up' : 'text-rose-400 flash-down'}`;
+                }
+
+                // Update Active Order Price Display if selected
+                if (activeDemoAsset === asset.symbol) {
+                    updateDemoOrderPriceDisplay();
+                }
+            });
+
+            // Refresh open positions PnL calculations live
+            updateOpenPositionsPnL();
+        }, 1500);
+
+        // ==========================================
+        // 3. TAB NAVIGATION SYSTEM
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('main > section').forEach(sec => sec.classList.add('hidden'));
+            document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+
+            const targetSection = document.getElementById(`tab-${tabId}`);
+            if (targetSection) targetSection.classList.remove('hidden');
+
+            const activeBtn = document.getElementById(`nav-${tabId}`);
+            if (activeBtn) activeBtn.classList.add('active');
+
+            // Close mobile menu if open
+            document.getElementById('mobileMenu').classList.add('hidden');
+
+            // Deferred initialization for TradingView Widgets to ensure smooth rendering
+            if (tabId === 'trading') {
+                loadTradingViewChart(activeDemoAsset);
+            } else if (tabId === 'calendar') {
+                loadTradingViewCalendar();
+            } else if (tabId === 'quotes') {
+                renderMarketQuotes();
+            }
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('hidden');
+        }
+
+        // ==========================================
+        // 4. TRADINGVIEW WIDGET INTEGRATIONS
+        // ==========================================
+        let tvChartWidget = null;
+
+        function loadTradingViewChart(symbol) {
+            const container = document.getElementById('tradingview_chart_container');
+            container.innerHTML = ''; // Clear container
+
+            const script = document.createElement('script');
+            script.src = 'https://s3.tradingview.com/tv.js';
+            script.async = true;
+            script.onload = () => {
+                if (typeof TradingView !== 'undefined') {
+                    new TradingView.widget({
+                        "autosize": true,
+                        "symbol": symbol === 'XAUUSD' ? 'OANDA:XAUUSD' : (symbol === 'BTCUSD' ? 'BINANCE:BTCUSDT' : `OANDA:${symbol}`),
+                        "interval": "60",
+                        "timezone": "Etc/UTC",
+                        "theme": "dark",
+                        "style": "1",
+                        "locale": "en",
+                        "toolbar_bg": "#0a0d14",
+                        "enable_publishing": false,
+                        "hide_side_toolbar": false,
+                        "allow_symbol_change": true,
+                        "container_id": "tradingview_chart_container"
+                    });
+                }
+            };
+            container.appendChild(script);
+        }
+
+        function loadTradingViewCalendar() {
+            const container = document.getElementById('tradingview_calendar_container');
+            if (container.children.length > 0) return; // Prevent duplicate embeds
+
+            const script = document.createElement('script');
+            script.src = 'https://s3.tradingview.com/external-embedding/embed-widget-events.js';
+            script.async = true;
+            script.innerHTML = JSON.stringify({
+                "width": "100%",
+                "height": "100%",
+                "colorTheme": "dark",
+                "isTransparent": true,
+                "currencyFilter": "USD,EUR,GBP,JPY,AUD",
+                "importanceFilter": "0,1"
+            });
+            container.appendChild(script);
+        }
+
+        // ==========================================
+        // 5. DEMO TRADING ENGINE LOGIC
+        // ==========================================
+        let demoBalance = 10000.00;
+        let activeDemoAsset = 'XAUUSD';
+        let openPositions = [];
+
+        function changeActiveAsset(symbol) {
+            activeDemoAsset = symbol;
+            document.getElementById('orderFormAssetTitle').innerText = `${symbol} Trading`;
+            updateDemoOrderPriceDisplay();
+            loadTradingViewChart(symbol);
+        }
+
+        function updateDemoOrderPriceDisplay() {
+            const asset = marketAssets.find(a => a.symbol === activeDemoAsset) || marketAssets[0];
+            const bid = asset.price;
+            const ask = asset.price + (asset.isGold ? 0.20 : 0.0002);
+
+            document.getElementById('orderCurrentPrice').innerText = `Price: $${bid.toFixed(asset.digits)}`;
+            document.getElementById('buyPriceLabel').innerText = `@ ${ask.toFixed(asset.digits)}`;
+            document.getElementById('sellPriceLabel').innerText = `@ ${bid.toFixed(asset.digits)}`;
+        }
+
+        function executeDemoTrade(type) {
+            const lots = parseFloat(document.getElementById('orderLots').value) || 0.1;
+            const leverage = parseInt(document.getElementById('orderLeverage').value) || 500;
+            const sl = parseFloat(document.getElementById('orderSL').value) || null;
+            const tp = parseFloat(document.getElementById('orderTP').value) || null;
+
+            const asset = marketAssets.find(a => a.symbol === activeDemoAsset) || marketAssets[0];
+            const entryPrice = type === 'BUY' ? (asset.price + (asset.isGold ? 0.20 : 0.0002)) : asset.price;
+
+            // Margin Requirement Calculation
+            const contractSize = asset.isGold ? 100 : 100000;
+            const requiredMargin = (entryPrice * lots * contractSize) / leverage;
+
+            const currentFreeMargin = calculateCurrentFreeMargin();
+            if (requiredMargin > currentFreeMargin) {
+                alert(`Insufficient Free Margin! Required: $${requiredMargin.toFixed(2)}, Available: $${currentFreeMargin.toFixed(2)}`);
+                return;
+            }
+
+            const position = {
+                id: Math.floor(100000 + Math.random() * 900000),
+                symbol: activeDemoAsset,
+                type: type,
+                lots: lots,
+                entryPrice: entryPrice,
+                margin: requiredMargin,
+                digits: asset.digits,
+                isGold: asset.isGold,
+                sl: sl,
+                tp: tp
+            };
+
+            openPositions.push(position);
+            renderOpenPositions();
+            updateDemoAccountSummary();
+        }
+
+        function closePosition(positionId) {
+            const posIndex = openPositions.findIndex(p => p.id === positionId);
+            if (posIndex !== -1) {
+                const pos = openPositions[posIndex];
+                const asset = marketAssets.find(a => a.symbol === pos.symbol);
+                const currentPrice = asset ? asset.price : pos.entryPrice;
+
+                // Calculate final PnL
+                const contractSize = pos.isGold ? 100 : 100000;
+                let pnl = 0;
+                if (pos.type === 'BUY') {
+                    pnl = (currentPrice - pos.entryPrice) * pos.lots * contractSize;
+                } else {
+                    pnl = (pos.entryPrice - currentPrice) * pos.lots * contractSize;
+                }
+
+                demoBalance += pnl;
+                openPositions.splice(posIndex, 1);
+                renderOpenPositions();
+                updateDemoAccountSummary();
+            }
+        }
+
+        function updateOpenPositionsPnL() {
+            let totalFloatingPnL = 0;
+            openPositions.forEach(pos => {
+                const asset = marketAssets.find(a => a.symbol === pos.symbol);
+                if (asset) {
+                    const currentPrice = asset.price;
+                    const contractSize = pos.isGold ? 100 : 100000;
+                    let pnl = 0;
+                    if (pos.type === 'BUY') {
+                        pnl = (currentPrice - pos.entryPrice) * pos.lots * contractSize;
+                    } else {
+                        pnl = (pos.entryPrice - currentPrice) * pos.lots * contractSize;
+                    }
+
+                    // Update Table Cell if rendered
+                    const pnlEl = document.getElementById(`pos-pnl-${pos.id}`);
+                    const priceEl = document.getElementById(`pos-price-${pos.id}`);
+                    if (pnlEl) {
+                        pnlEl.innerText = `${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`;
+                        pnlEl.className = `p-3 font-bold ${pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+                    }
+                    if (priceEl) {
+                        priceEl.innerText = currentPrice.toFixed(pos.digits);
+                    }
+
+                    totalFloatingPnL += pnl;
+                }
+            });
+
+            updateDemoAccountSummary(totalFloatingPnL);
+        }
+
+        function calculateCurrentFreeMargin() {
+            let usedMargin = openPositions.reduce((acc, pos) => acc + pos.margin, 0);
+            return demoBalance - usedMargin;
+        }
+
+        function updateDemoAccountSummary(floatingPnL = 0) {
+            let usedMargin = openPositions.reduce((acc, pos) => acc + pos.margin, 0);
+            let equity = demoBalance + floatingPnL;
+            let freeMargin = equity - usedMargin;
+
+            document.getElementById('demoBalance').innerText = `$${demoBalance.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            document.getElementById('demoEquity').innerText = `$${equity.toLocaleString('en-US', {minimumFractionDigits: 2})}`;
+            
+            const pnlEl = document.getElementById('demoFloatingPnL');
+            pnlEl.innerText = `${floatingPnL >= 0 ? '+' : ''}$${floatingPnL.toFixed(2)}`;
+            pnlEl.className = `font-bold text-sm ${floatingPnL >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+
+            document.getElementById('demoMargin').innerText = `$${usedMargin.toFixed(2)}`;
+            document.getElementById('demoFreeMargin').innerText = `$${freeMargin.toFixed(2)}`;
+        }
+
+        function renderOpenPositions() {
+            const tableBody = document.getElementById('openPositionsTable');
+            if (openPositions.length === 0) {
+                const langData = i18n[currentLang] || i18n['en'];
+                tableBody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">${langData.no_positions}</td></tr>`;
+                return;
+            }
+
+            tableBody.innerHTML = openPositions.map(pos => {
+                const asset = marketAssets.find(a => a.symbol === pos.symbol);
+                const currentPrice = asset ? asset.price : pos.entryPrice;
+                return `
+                    <tr class="hover:bg-slate-800/40">
+                        <td class="p-3 font-mono text-slate-400">#${pos.id}</td>
+                        <td class="p-3 font-bold text-white">${pos.symbol}</td>
+                        <td class="p-3 font-bold ${pos.type === 'BUY' ? 'text-emerald-400' : 'text-rose-400'}">${pos.type}</td>
+                        <td class="p-3 text-white">${pos.lots}</td>
+                        <td class="p-3 font-mono">${pos.entryPrice.toFixed(pos.digits)}</td>
+                        <td class="p-3 font-mono" id="pos-price-${pos.id}">${currentPrice.toFixed(pos.digits)}</td>
+                        <td class="p-3 font-bold text-emerald-400" id="pos-pnl-${pos.id}">$0.00</td>
+                        <td class="p-3 text-center">
+                            <button onclick="closePosition(${pos.id})" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white px-2.5 py-1 rounded text-[11px] font-bold border border-rose-500/30 transition">
+                                Close
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function resetDemoAccount() {
+            demoBalance = 10000.00;
+            openPositions = [];
+            renderOpenPositions();
+            updateDemoAccountSummary();
+        }
+
+        // ==========================================
+        // 6. MARKET QUOTES TAB RENDERING
+        // ==========================================
+        function renderMarketQuotes() {
+            const body = document.getElementById('quotesTableBody');
+            body.innerHTML = marketAssets.map(asset => {
+                const bid = asset.price;
+                const ask = asset.price + (asset.isGold ? 0.20 : 0.0002);
+                return `
+                    <tr class="hover:bg-slate-800/50 transition">
+                        <td class="p-4 flex items-center gap-2">
+                            <span class="font-black text-white text-base">${asset.symbol}</span>
+                            <span class="text-xs text-slate-500">(${asset.name})</span>
+                        </td>
+                        <td class="p-4 font-mono font-bold text-slate-200">${bid.toFixed(asset.digits)}</td>
+                        <td class="p-4 font-mono font-bold text-slate-200">${ask.toFixed(asset.digits)}</td>
+                        <td class="p-4 font-bold ${asset.change >= 0 ? 'text-emerald-400' : 'text-rose-400'}">
+                            ${asset.change >= 0 ? '+' : ''}${asset.change}%
+                        </td>
+                        <td class="p-4 text-center space-x-2">
+                            <button onclick="jumpToTradeAsset('${asset.symbol}')" class="bg-amber-500 hover:bg-amber-400 text-black font-extrabold text-xs px-3 py-1.5 rounded-lg transition">
+                                Trade Demo
+                            </button>
+                            <a href="https://kvbcaj.com/rhem9guim" target="_blank" class="bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs px-3 py-1.5 rounded-lg border border-slate-700 inline-block">
+                                Real Account
+                            </a>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        function jumpToTradeAsset(symbol) {
+            document.getElementById('activeAssetSelect').value = symbol;
+            changeActiveAsset(symbol);
+            switchTab('trading');
+        }
+
+        // ==========================================
+        // 7. 50+ TRADING GLOSSARY HUB
+        // ==========================================
+        const glossaryDatabase = [
+            // BASICS
+            { term: "Pip", cat: "Basics", def: "Percentage in Point. Ngưỡng biến động giá nhỏ nhất của cặp tiền tệ (thường là chữ số thập phân thứ 4)." },
+            { term: "Lot", cat: "Basics", def: "Khối lượng giao dịch chuẩn trong Forex. 1 Standard Lot = 100,000 đơn vị đồng tiền cơ sở." },
+            { term: "Spread", cat: "Basics", def: "Chênh lệch giữa giá Mua (Ask) và giá Bán (Bid) mà sàn thu từ người giao dịch." },
+            { term: "Leverage (Đòn Bẩy)", cat: "Basics", def: "Tỷ lệ vốn vay do sàn cung cấp (ví dụ 1:1000 trên KVB Prime) giúp tăng khối lượng giao dịch." },
+            { term: "Margin (Ký Quỹ)", cat: "Basics", def: "Số tiền tối thiểu trong tài khoản cần thiết để duy trì một vị thế đang mở." },
+            { term: "Free Margin", cat: "Basics", def: "Số tiền ký quỹ còn dư trong tài khoản có thể dùng để mở thêm lệnh mới." },
+            { term: "Equity (Tài Sản)", cat: "Basics", def: "Số dư tài khoản cộng/trừ tổng lợi nhuận hoặc thua lỗ tạm tính của các lệnh đang mở." },
+            { term: "Slippage (Trượt Giá)", cat: "Basics", def: "Chênh lệch giữa giá bạn đặt lệnh và giá thực tế được khớp trên thị trường khi biến động mạnh." },
+            { term: "Swap (Phí Qua Đêm)", cat: "Basics", def: "Lãi suất chênh lệch khi bạn giữ vị thế giao dịch qua đêm (KVB Prime hỗ trợ 5 ngày Swap-Free)." },
+            { term: "Bull Market (Thị Trường Bò)", cat: "Basics", def: "Xu hướng thị trường tăng giá kéo dài." },
+            { term: "Bear Market (Thị Trường Gấu)", cat: "Basics", def: "Xu hướng thị trường giảm giá kéo dài." },
+            { term: "Long / Short", cat: "Basics", def: "Long là vị thế Mua kỳ vọng giá tăng; Short là vị thế Bán kỳ vọng giá giảm." },
+            { term: "Margin Call", cat: "Basics", def: "Thông báo từ sàn khi tỷ lệ ký quỹ xuống quá thấp, yêu cầu nạp thêm tiền hoặc đóng lệnh." },
+            { term: "Stop Out", cat: "Basics", def: "Mức tự động đóng toàn bộ lệnh của sàn khi tài khoản không còn đủ ký quỹ duy trì." },
+            { term: "ECN (Electronic Communication Network)", cat: "Basics", def: "Mạng truyền thông điện tử kết nối trực tiếp trader với nhà cung cấp thanh khoản." },
+            { term: "STP (Straight Through Processing)", cat: "Basics", def: "Công nghệ đẩy lệnh trực tiếp tới thị trường không qua bàn xử lý trung gian (Dealing Desk)." },
+
+            // MACROECONOMICS
+            { term: "NFP (Non-Farm Payrolls)", cat: "Macro", def: "Báo cáo bảng lương phi nông nghiệp Mỹ công bố vào thứ Sáu đầu tiên hàng tháng, gây biến động cực mạnh." },
+            { term: "CPI (Consumer Price Index)", cat: "Macro", def: "Chỉ số giá tiêu dùng đo lường tỷ lệ lạm phát hàng tháng của nền kinh tế." },
+            { term: "PPI (Producer Price Index)", cat: "Macro", def: "Chỉ số giá sản xuất đo lường mức thay đổi giá hàng hóa ở cấp độ bán buôn." },
+            { term: "FOMC", cat: "Macro", def: "Ủy ban Thị trường Mở Liên bang thuộc Cục Dự trữ Liên bang Mỹ (FED), quyết định lãi suất USD." },
+            { term: "GDP (Gross Domestic Product)", cat: "Macro", def: "Tổng sản phẩm quốc nội đo lường tổng giá trị hàng hóa và dịch vụ được sản xuất." },
+            { term: "Interest Rate (Lãi Suất Central Bank)", cat: "Macro", def: "Công cụ điều hành chính sách tiền tệ quan trọng nhất tác động trực tiếp tới sức mạnh đồng tiền." },
+            { term: "Hawkish (Diều Hâu)", cat: "Macro", def: "Quan điểm chính sách tiền tệ thắt chặt, ủng hộ tăng lãi suất để kiểm soát lạm phát." },
+            { term: "Dovish (Bồ Câu)", cat: "Macro", def: "Quan điểm chính sách tiền tệ nới lỏng, hạ lãi suất để kích thích kinh tế." },
+            { term: "Quantitative Easing (QE)", cat: "Macro", def: "Gói nới lỏng định lượng khi ngân hàng trung ương mua tài sản để bơm tiền vào nền kinh tế." },
+            { term: "DXY (US Dollar Index)", cat: "Macro", def: "Chỉ số đo lường sức mạnh của đồng USD so với rổ 6 đồng tiền chủ chốt khác." },
+            { term: "Retail Sales", cat: "Macro", def: "Doanh số bán lẻ đo lường tổng chi tiêu chi tiết của người tiêu dùng." },
+            { term: "Unemployment Rate", cat: "Macro", def: "Tỷ lệ thất nghiệp phản ánh sức khỏe thị trường lao động." },
+
+            // TECHNICALS
+            { term: "Support & Resistance (Hỗ Trợ & Kháng Cự)", cat: "Technicals", def: "Các vùng giá mà tại đó áp lực Mua hoặc Bán quay trở lại làm đảo chiều giá." },
+            { term: "Breakout", cat: "Technicals", def: "Hành động giá phá vỡ một vùng kháng cự hoặc hỗ trợ quan trọng với khối lượng lớn." },
+            { term: "RSI (Relative Strength Index)", cat: "Technicals", def: "Chỉ báo động lượng đo lường điều kiện quá mua (Overbought >70) hoặc quá bán (Oversold <30)." },
+            { term: "MACD", cat: "Technicals", def: "Chỉ báo động lượng theo xu hướng hiển thị mối quan hệ giữa hai đường trung bình động." },
+            { term: "Moving Average (MA)", cat: "Technicals", def: "Đường trung bình động làm mượt dữ liệu giá để xác định hướng đi xu hướng." },
+            { term: "Fibonacci Retracement", cat: "Technicals", def: "Công cụ xác định các mức hồi quy tiềm năng (38.2%, 50%, 61.8%) dựa trên dãy số Fibonacci." },
+            { term: "Order Block (OB)", cat: "Technicals", def: "Vùng giá mà các tổ chức tài chính lớn thu gom vị thế trước khi đẩy giá mạnh." },
+            { term: "Fair Value Gap (FVG)", cat: "Technicals", def: "Khoảng trống giá mất cân bằng cung cầu giữa 3 cây nến liên tiếp." },
+            { term: "Price Action", cat: "Technicals", def: "Phương pháp phân tích kỹ thuật dựa thuần túy trên sự chuyển động của nến giá không dùng chỉ báo." },
+            { term: "ATR (Average True Range)", cat: "Technicals", def: "Chỉ báo đo lường mức độ biến động (Volatility) của thị trường trong một khoảng thời gian." },
+
+            // RISK MANAGEMENT
+            { term: "Stop Loss (SL)", cat: "Risk", def: "Mức giá cắt lỗ tự động để bảo vệ tài khoản khỏi các biến động bất lợi." },
+            { term: "Take Profit (TP)", cat: "Risk", def: "Mức giá chốt lời tự động khi thị trường đạt mục tiêu kỳ vọng." },
+            { term: "Risk / Reward Ratio (R:R)", cat: "Risk", def: "Tỷ lệ giữa rủi ro thua lỗ chấp nhận so với lợi nhuận kỳ vọng (ví dụ 1:2, 1:3)." },
+            { term: "Drawdown", cat: "Risk", def: "Mức sụt giảm phần trăm từ đỉnh tài sản xuống đáy trước khi phục hồi." },
+            { term: "Position Sizing", cat: "Risk", def: "Kỹ thuật tính toán số Lot phù hợp dựa trên số tiền rủi ro tối đa cho phép mỗi lệnh (% Risk)." },
+            { term: "Hedging", cat: "Risk", def: "Mở hai vị thế ngược chiều (Buy và Sell) trên cùng một tài sản để phòng ngừa rủi ro." },
+            { term: "Trailing Stop", cat: "Risk", def: "Lệnh cắt lỗ động tự động di chuyển đi theo chiều có lợi của giá để khóa lợi nhuận." }
+        ];
+
+        let activeGlossaryCat = 'ALL';
+
+        function renderGlossary() {
+            const grid = document.getElementById('glossaryGrid');
+            const searchVal = (document.getElementById('glossarySearch')?.value || '').toLowerCase();
+
+            const filtered = glossaryDatabase.filter(item => {
+                const matchesCat = activeGlossaryCat === 'ALL' || item.cat === activeGlossaryCat;
+                const matchesSearch = item.term.toLowerCase().includes(searchVal) || item.def.toLowerCase().includes(searchVal);
+                return matchesCat && matchesSearch;
+            });
+
+            grid.innerHTML = filtered.map(item => `
+                <div class="glass-card p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                    <div>
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-bold text-white text-base">${item.term}</h4>
+                            <span class="text-[10px] bg-slate-800 text-amber-400 px-2 py-0.5 rounded font-semibold border border-slate-700">${item.cat}</span>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">${item.def}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterGlossary() {
+            renderGlossary();
+        }
+
+        function filterGlossaryCat(cat) {
+            activeGlossaryCat = cat;
+            renderGlossary();
+        }
+
+        function jumpToGlossary(term) {
+            switchTab('glossary');
+            document.getElementById('glossarySearch').value = term;
+            renderGlossary();
+        }
+
+        // ==========================================
+        // 8. CALCULATOR FUNCTIONS
+        // ==========================================
+        function calculateMargin() {
+            const asset = document.getElementById('calcMarginAsset').value;
+            const lots = parseFloat(document.getElementById('calcMarginLots').value) || 1.0;
+            const leverage = parseFloat(document.getElementById('calcMarginLeverage').value) || 1000;
+
+            let price = 2725.00; // Gold
+            let contract = 100;
+            if (asset === 'EURUSD') { price = 1.0850; contract = 100000; }
+            if (asset === 'GBPUSD') { price = 1.2950; contract = 100000; }
+
+            const margin = (price * lots * contract) / leverage;
+            document.getElementById('resMarginValue').innerText = `$${margin.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})} USD`;
+        }
+
+        function calculatePipPnL() {
+            const lots = parseFloat(document.getElementById('calcPipLots').value) || 1.0;
+            const symbol = document.getElementById('calcPipSymbol').value;
+            const entry = parseFloat(document.getElementById('calcPipEntry').value) || 1.0;
+            const exit = parseFloat(document.getElementById('calcPipExit').value) || 1.0;
+
+            let pipValue = 10.0;
+            let contract = 100000;
+            if (symbol === 'GOLD') {
+                pipValue = 10.0; // 0.10 gold move
+                contract = 100;
+            }
+
+            pipValue = pipValue * lots;
+            const pnl = (exit - entry) * lots * contract;
+
+            document.getElementById('resPipValue').innerText = `$${pipValue.toFixed(2)}`;
+            const pnlEl = document.getElementById('resPipPnL');
+            pnlEl.innerText = `${pnl >= 0 ? '+' : ''}$${pnl.toFixed(2)}`;
+            pnlEl.className = `text-sm font-bold ${pnl >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+        }
+
+        function calculateSwapSavings() {
+            const lots = parseFloat(document.getElementById('calcSwapLots').value) || 1.0;
+            const days = parseInt(document.getElementById('calcSwapDays').value) || 5;
+
+            // Average overnight gold swap fee ~$15 / lot / night
+            const averageSwapFee = 15.0;
+            const freeDays = Math.min(days, 5); // KVB 5-Day Free limit
+            const savings = freeDays * averageSwapFee * lots;
+
+            document.getElementById('resSwapSavings').innerText = `$${savings.toFixed(2)} USD Saved`;
+        }
+
+        function calculateRebate() {
+            const volume = parseFloat(document.getElementById('calcRebateVolume').value) || 0;
+            const rate = parseFloat(document.getElementById('calcRebateRate').value) || 6.0;
+
+            const total = volume * rate;
+            document.getElementById('resRebateTotal').innerText = `$${total.toLocaleString('en-US', {minimumFractionDigits: 2})} USD`;
+        }
+
+        // ==========================================
+        // 9. MODAL BROKER REVIEW
+        // ==========================================
+        function openBrokerModal(brokerKey) {
+            const modal = document.getElementById('brokerModal');
+            const content = document.getElementById('modalContent');
+
+            if (brokerKey === 'kvb') {
+                content.innerHTML = `
+                    <h3 class="text-2xl font-black text-amber-400">KVB Prime Detailed Review</h3>
+                    <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                        KVB Prime is an industry-leading broker offering 1:1000 ultra leverage, instant deposit/withdrawals, and multi-tier regulation (FCA, SVG, CIMA).
+                    </p>
+                    <ul class="text-xs text-slate-300 space-y-2 mt-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                        <li>✔️ <strong>5-Day Swap Free:</strong> Hold overnight Gold & FX orders with $0 fee up to 5 days.</li>
+                        <li>✔️ <strong>Low Deposit:</strong> Start trading with just $10 USD.</li>
+                        <li>✔️ <strong>Execution:</strong> Direct liquidity access with zero dealing desk intervention.</li>
+                    </ul>
+                    <a href="https://kvbcaj.com/rhem9guim" target="_blank" class="w-full bg-amber-500 hover:bg-amber-400 text-black font-extrabold py-3 rounded-xl block text-center mt-6 transition">
+                        Open KVB Account
+                    </a>
+                `;
+            } else if (brokerKey === 'gtc') {
+                content.innerHTML = `
+                    <h3 class="text-2xl font-black text-white">GTC FX Detailed Review</h3>
+                    <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                        GTC FX specializes in institutional execution with spreads starting from 0.0 pips and fast execution speeds.
+                    </p>
+                    <a href="https://web.mygtc.app/login/register?ref=vtgvcd7i" target="_blank" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl block text-center mt-6 transition border border-slate-700">
+                        Open GTC Account
+                    </a>
+                `;
+            } else if (brokerKey === 'tmgm') {
+                content.innerHTML = `
+                    <h3 class="text-2xl font-black text-white">TMGM Detailed Review</h3>
+                    <p class="text-xs text-slate-300 mt-2 leading-relaxed">
+                        TMGM provides access to over 12,000+ CFD markets with ASIC regulation and fast 2-hour processing times.
+                    </p>
+                    <a href="https://portal.tmgm.com/register?node=MjA2MjIz&language=en" target="_blank" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-3 rounded-xl block text-center mt-6 transition border border-slate-700">
+                        Open TMGM Account
+                    </a>
+                `;
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeBrokerModal() {
+            document.getElementById('brokerModal').classList.add('hidden');
+        }
+
+        // ==========================================
+        // 10. APPLICATION INITIALIZATION
+        // ==========================================
+        window.onload = function() {
+            initTicker();
+            renderGlossary();
+            updateDemoOrderPriceDisplay();
+            updateDemoAccountSummary();
+        };
+    </script>
+</body>
+</html>
